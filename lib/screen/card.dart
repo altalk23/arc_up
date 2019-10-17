@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:arc_up/card_list.dart';
+import 'package:arc_up/widget/custom_button.dart';
 import 'package:flutter/services.dart';
 import 'package:arc_up/constant.dart';
 import 'package:arc_up/widget/custom_label.dart';
@@ -10,64 +12,72 @@ import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:sensors/sensors.dart';
 
 class CardScreen extends StatefulWidget {
-    CardScreen({Key key}) : super(key: key);
+    CardScreen({Key key, this.type}) : super(key: key);
+    final int type;
     
     @override
     _CardScreen createState() {
         SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
-        return _CardScreen();
+        return _CardScreen(type);
     }
 }
 
 class _CardScreen extends State<CardScreen> {
     List<double> _aV;
     double aDY;
-    double lim = 7;
+    double lim = 3.5;
     List<StreamSubscription<dynamic>> _sub = <StreamSubscription<dynamic>>[];
     Random random = new Random();
     String current;
     int score = 0;
     bool gDLock = false;
     
-    List<String> test = [
-        "sample text 1",
-        "sample text 2",
-        "sample text 3",
-        "sample text 4",
-        "sample text 5",
-        "sample text 6",
-        "sample text 7",
-        "sample text 8",
-    ];
+    List<String> list;
+    final int type;
+    
+    _CardScreen(this.type);
     
     @override
     void initState() {
         super.initState();
-        current = test[0];
-        _sub.add(accelerometerEvents.listen((AccelerometerEvent event) {
+        list = CardList.list[type];
+        current = list[0];
+        /*_sub.add(gyroscopeEvents.listen((GyroscopeEvent event) {
             setState(() {
                 _aV = <double>[event.x, event.y, event.z];
-                aDY = _aV[2];
+                aDY = _aV[1];
                 _next();
             });
-        }));
+        }));*/
     }
     
     void _next() {
         if (aDY > lim && !gDLock) {
-            print(gDLock);
-            //TODO: next
-            current = test[random.nextInt(test.length)];
-            score++;
-            gDLock = true;
+        
         }
         else if (aDY < -lim && !gDLock) {
-            //TODO: skip
-            current = test[random.nextInt(test.length)];
-            gDLock = true;
+        
         }
         else if (aDY <= lim && aDY >= -lim) gDLock = false;
         //TODO: nothing
+    }
+    
+    void __next() {
+        print(gDLock);
+        //TODO: next
+        setState(() {
+            current = list[random.nextInt(list.length)];
+            score++;
+            gDLock = true;
+        });
+    }
+    
+    void _skip() {
+        //TODO: skip
+        setState(() {
+            current = list[random.nextInt(list.length)];
+            gDLock = true;
+        });
     }
     
     @override
@@ -112,6 +122,19 @@ class _CardScreen extends State<CardScreen> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                    CustomButton(
+                                        child: CustomLabel("next"),
+                                        onPressed: __next,
+                                    ),
+                                    CustomButton(
+                                        child: CustomLabel("skip"),
+                                        onPressed: _skip,
+                                    ),
+                                ],
+                            ),
                             CustomLabel(
                                 current,
                                 fontSize: Constant.cardFont,
@@ -119,7 +142,10 @@ class _CardScreen extends State<CardScreen> {
                             CustomLabel(
                                 score.toString(),
                                 fontSize: Constant.largeFont,
-                            )
+                            ),
+                            CustomLabel(
+                                    aDY.toString()
+                            ),
                         ],
                     ),
                     /*child: SizedBox(

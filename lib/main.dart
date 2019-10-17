@@ -1,4 +1,4 @@
-import 'package:arc_up/screen/card.dart';
+import 'package:arc_up/screen/main.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
             theme: ThemeData(
                 fontFamily: 'Nunito',
             ),
-            home: CardScreen(),
+            home: MainScreen(),
         );
     }
 }
