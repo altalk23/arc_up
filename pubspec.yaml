@@ -22,6 +22,7 @@ dependencies:
     sensors: any
     gradient_app_bar: ^0.0.1
     cupertino_icons: ^0.1.2
+    tuple: any
 
 dev_dependencies:
     flutter_test:

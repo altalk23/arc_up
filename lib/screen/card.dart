@@ -6,10 +6,10 @@ import 'package:arc_up/widget/custom_button.dart';
 import 'package:flutter/services.dart';
 import 'package:arc_up/constant.dart';
 import 'package:arc_up/widget/custom_label.dart';
-import 'package:arc_up/widget/custom_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:sensors/sensors.dart';
+import 'package:tuple/tuple.dart';
 
 class CardScreen extends StatefulWidget {
     CardScreen({Key key, this.type}) : super(key: key);
@@ -26,6 +26,7 @@ class _CardScreen extends State<CardScreen> {
     double aDZ;
     double lim = 8.5;
     List<StreamSubscription<dynamic>> _sub = <StreamSubscription<dynamic>>[];
+    List<Tuple2<String, bool>> wordData = List<Tuple2<String, bool>>();
     Random random = new Random();
     String current;
     int score = 0;
@@ -40,6 +41,7 @@ class _CardScreen extends State<CardScreen> {
     void initState() {
         super.initState();
         list = CardList.list[type];
+        list.shuffle();
         current = list[0];
         _sub.add(accelerometerEvents.listen((AccelerometerEvent event) {
             setState(() {
@@ -61,8 +63,8 @@ class _CardScreen extends State<CardScreen> {
     }
     
     void __next() {
-        print(gDLock);
         //TODO: next
+        wordData.add(Tuple2(current, true));
         setState(() {
             current = list[random.nextInt(list.length)];
             score++;
@@ -72,6 +74,7 @@ class _CardScreen extends State<CardScreen> {
     
     void _skip() {
         //TODO: skip
+        wordData.add(Tuple2(current, false));
         setState(() {
             current = list[random.nextInt(list.length)];
             gDLock = true;
@@ -143,83 +146,8 @@ class _CardScreen extends State<CardScreen> {
                             ),
                         ],
                     ),
-                    /*child: SizedBox(
-                        width: 300,
-                        height: 300,
-                        child: Container(
-                            color: gDY > lim ? Colors.red : gDY < -lim ? Colors.blue : Colors.transparent,
-                        ),
-                    ),*/
-                ),
-            ),
-        );
-        return CustomScaffold(
-            title: "placeholder",
-            child: Center(
-                child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(50),
-                        ),
-                        border: Border.all(
-                            color: Colors.white,
-                            width: 15,
-                            style: BorderStyle.solid,
-                        ),
-                    ),
                 ),
             ),
         );
     }
 }
-
-/*
-Column(
-    children: <Widget>[
-        CustomLabel(
-            gDY.round().toString(),
-            fontSize: Constant.largeFont,
-        ),
-        SizedBox(
-            width: 300,
-            height: 300,
-            child: Container(
-                color: gDY > lim ? Colors.red : gDY < -lim ? Colors.blue : Colors.transparent,
-            ),
-        ),
-    ],
-)
-)
-
- */
-
-/*
-Center(
-    child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-            Padding(
-                child: CustomLabel(
-                    '∆x${_aV[0]~/1}\n∆y${_aV[1]~/1}\n∆z${_aV[2]~/1}',
-                    fontSize: Constant.mediumFont,
-                ),
-                padding: const EdgeInsets.all(16.0),
-            ),
-            Padding(
-                child: CustomLabel(
-                    '∆x${_gV[0]~/1}\n∆y${_gV[1]~/1}\n∆z${_gV[2]~/1}',
-                    fontSize: Constant.mediumFont,
-                ),
-                padding: const EdgeInsets.all(16.0),
-            ),
-            Padding(
-                child: CustomLabel(
-                    '∆x${_uAV[0]~/1}\n∆y${_uAV[1]~/1}\n∆z${_uAV[2]~/1}',
-                    fontSize: Constant.mediumFont,
-                ),
-                padding: const EdgeInsets.all(16.0),
-            ),
-        ],
-    ),
-),
- */

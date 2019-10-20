@@ -108,8 +108,8 @@ class CardList {
     ];
     
     static const List<String> type = [
-        "sample type 1",
-        "sample type 2",
+        "Programlama",
+        "Mekanik",
         "sample type 3",
     ];
 }

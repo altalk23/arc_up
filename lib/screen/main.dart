@@ -24,29 +24,41 @@ class _MainScreen extends State<MainScreen> {
         return CustomScaffold(
             title: "placeholder",
             child: Container(
-                child: ListView.builder(
-                    itemBuilder: (BuildContext context, int index) {
-                        return Padding(
-                            padding: EdgeInsets.all(Constant.padding),
-                            child: CustomButton(
-                                child: CustomLabel(
-                                    CardList.type[index],
-                                    fontSize: Constant.largeFont,
-                                ),
-                                onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) {
-                                                return CardScreen(type: index);
-                                            },
-                                        ),
-                                    );
-                                },
+                child: ListView(
+                    children: <Widget>[
+                        ListTile(
+                            title: CustomLabel(
+                                CardList.type[0],
+                                fontSize: Constant.largeFont,
                             ),
-                        );
-                    },
-                    itemCount: 3,
+                            onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) {
+                                            return CardScreen(type: 0);
+                                        },
+                                    ),
+                                );
+                            },
+                        ),
+                        ListTile(
+                            title: CustomLabel(
+                                CardList.type[1],
+                                fontSize: Constant.largeFont,
+                            ),
+                            onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) {
+                                            return CardScreen(type: 1);
+                                        },
+                                    ),
+                                );
+                            },
+                        ),
+                    ],
                 ),
             ),
         );
