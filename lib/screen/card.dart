@@ -23,9 +23,8 @@ class CardScreen extends StatefulWidget {
 }
 
 class _CardScreen extends State<CardScreen> {
-    List<double> _aV;
-    double aDY;
-    double lim = 3.5;
+    double aDZ;
+    double lim = 8.5;
     List<StreamSubscription<dynamic>> _sub = <StreamSubscription<dynamic>>[];
     Random random = new Random();
     String current;
@@ -42,23 +41,22 @@ class _CardScreen extends State<CardScreen> {
         super.initState();
         list = CardList.list[type];
         current = list[0];
-        /*_sub.add(gyroscopeEvents.listen((GyroscopeEvent event) {
+        _sub.add(accelerometerEvents.listen((AccelerometerEvent event) {
             setState(() {
-                _aV = <double>[event.x, event.y, event.z];
-                aDY = _aV[1];
+                aDZ = event.z;
                 _next();
             });
-        }));*/
+        }));
     }
     
     void _next() {
-        if (aDY > lim && !gDLock) {
-        
+        if (aDZ > lim && !gDLock) {
+            __next();
         }
-        else if (aDY < -lim && !gDLock) {
-        
+        else if (aDZ < -lim && !gDLock) {
+            _skip();
         }
-        else if (aDY <= lim && aDY >= -lim) gDLock = false;
+        else if (aDZ <= lim && aDZ >= -lim) gDLock = false;
         //TODO: nothing
     }
     
@@ -142,9 +140,6 @@ class _CardScreen extends State<CardScreen> {
                             CustomLabel(
                                 score.toString(),
                                 fontSize: Constant.largeFont,
-                            ),
-                            CustomLabel(
-                                    aDY.toString()
                             ),
                         ],
                     ),
