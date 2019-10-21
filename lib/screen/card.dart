@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:arc_up/card_list.dart';
+import 'package:arc_up/screen/main.dart';
 import 'package:arc_up/widget/custom_button.dart';
 import 'package:flutter/services.dart';
 import 'package:arc_up/constant.dart';
@@ -9,6 +10,7 @@ import 'package:arc_up/widget/custom_label.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_app_bar/gradient_app_bar.dart';
 import 'package:sensors/sensors.dart';
+import 'package:simple_animations/simple_animations.dart';
 import 'package:tuple/tuple.dart';
 
 class CardScreen extends StatefulWidget {
@@ -17,12 +19,12 @@ class CardScreen extends StatefulWidget {
     
     @override
     _CardScreen createState() {
-        SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
         return _CardScreen(type);
     }
 }
 
 class _CardScreen extends State<CardScreen> {
+    Stopwatch stopwatch = Stopwatch();
     double aDZ;
     double lim = 8.5;
     List<StreamSubscription<dynamic>> _sub = <StreamSubscription<dynamic>>[];
@@ -31,6 +33,8 @@ class _CardScreen extends State<CardScreen> {
     String current;
     int score = 0;
     bool gDLock = false;
+    Tween tween;
+    int _i = 0;
     
     List<String> list;
     final int type;
@@ -40,20 +44,24 @@ class _CardScreen extends State<CardScreen> {
     @override
     void initState() {
         super.initState();
-        list = CardList.list[type];
+        list = CardList.list[type].toList();
         list.shuffle();
-        current = list[0];
+        current = list[_i];
         _sub.add(accelerometerEvents.listen((AccelerometerEvent event) {
             setState(() {
                 aDZ = event.z;
-                _next();
+                _switch();
             });
         }));
+        stopwatch.start();
+        Timer(Duration(minutes: 1), ()  {
+            Navigator.pop(context, wordData);
+        });
     }
     
-    void _next() {
+    void _switch() {
         if (aDZ > lim && !gDLock) {
-            __next();
+            _next();
         }
         else if (aDZ < -lim && !gDLock) {
             _skip();
@@ -62,11 +70,14 @@ class _CardScreen extends State<CardScreen> {
         //TODO: nothing
     }
     
-    void __next() {
+    void _next() {
         //TODO: next
         wordData.add(Tuple2(current, true));
-        setState(() {
-            current = list[random.nextInt(list.length)];
+        if (_i >= 49) {
+            Navigator.pop(context, wordData);
+        }
+        else setState(() {
+            current = list[++_i];
             score++;
             gDLock = true;
         });
@@ -75,8 +86,11 @@ class _CardScreen extends State<CardScreen> {
     void _skip() {
         //TODO: skip
         wordData.add(Tuple2(current, false));
-        setState(() {
-            current = list[random.nextInt(list.length)];
+        if (_i >= 49) {
+            Navigator.pop(context, wordData);
+        }
+        else setState(() {
+            current = list[++_i];
             gDLock = true;
         });
     }
@@ -128,7 +142,7 @@ class _CardScreen extends State<CardScreen> {
                                 children: <Widget>[
                                     CustomButton(
                                         child: CustomLabel("next"),
-                                        onPressed: __next,
+                                        onPressed: _next,
                                     ),
                                     CustomButton(
                                         child: CustomLabel("skip"),

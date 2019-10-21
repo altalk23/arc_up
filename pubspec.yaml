@@ -23,6 +23,7 @@ dependencies:
     gradient_app_bar: ^0.0.1
     cupertino_icons: ^0.1.2
     tuple: any
+    simple_animations: any
 
 dev_dependencies:
     flutter_test:
