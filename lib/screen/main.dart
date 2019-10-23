@@ -17,6 +17,7 @@ class MainScreen extends StatefulWidget {
     
     @override
     _MainScreen createState() {
+        SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
         return _MainScreen();
     }
 }
@@ -59,79 +60,76 @@ class _MainScreen extends State<MainScreen> {
             ],
             title: "placeholder",
             child: Container(
-                child: AbsorbPointer(
-                    absorbing: _absorb,
-                    child: Column(
-                        children: <Widget>[
-                            Padding(
-                                padding: const EdgeInsets.all(Constant.largePadding),
-                                child: ListTile(
-                                    title: CustomLabel(
-                                        CardList.type[0],
-                                        fontSize: Constant.largeFont,
-                                    ),
-                                    onTap: () {
-                                        wordData = null;
-                                        wordData = Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                                    return CardScreen(type: 0);
-                                                },
-                                            ),
-                                        );
-                                        setState(() {
-                                            _absorb = true;
-                                        });
-                                    },
+                child: Column(
+                    children: <Widget>[
+                        Padding(
+                            padding: const EdgeInsets.all(Constant.largePadding),
+                            child: ListTile(
+                                title: CustomLabel(
+                                    CardList.type[0],
+                                    fontSize: Constant.largeFont,
                                 ),
+                                onTap: () {
+                                    wordData = null;
+                                    wordData = Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) {
+                                                return CardScreen(type: 0);
+                                            },
+                                        ),
+                                    );
+                                    setState(() {
+                                        _absorb = true;
+                                    });
+                                },
                             ),
-                            Padding(
-                                padding: const EdgeInsets.all(Constant.largePadding),
-                                child: ListTile(
-                                    title: CustomLabel(
-                                        CardList.type[1],
-                                        fontSize: Constant.largeFont,
-                                    ),
-                                    onTap: () {
-                                        wordData = null;
-                                        wordData = Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                                    return CardScreen(type: 1);
-                                                },
-                                            ),
-                                        );
-                                    },
+                        ),
+                        Padding(
+                            padding: const EdgeInsets.all(Constant.largePadding),
+                            child: ListTile(
+                                title: CustomLabel(
+                                    CardList.type[1],
+                                    fontSize: Constant.largeFont,
                                 ),
+                                onTap: () {
+                                    wordData = null;
+                                    wordData = Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) {
+                                                return CardScreen(type: 1);
+                                            },
+                                        ),
+                                    );
+                                },
                             ),
-                            Expanded(
-                                child: FutureBuilder(
-                                    future: wordData,
-                                    builder: (context, snap) {
-                                        return snap.hasData ? ListView.separated(
-                                            itemBuilder: (context, index) {
-                                                return Container(
-                                                    color: snap.data[index].item2 ? Colors.lightGreen : Colors.red,
-                                                    child: ListTile(
-                                                        title: CustomLabel(
-                                                            snap.data[index].item1,
-                                                            fontSize: Constant.mediumFont,
-                                                        ),
+                        ),
+                        Expanded(
+                            child: FutureBuilder(
+                                future: wordData,
+                                builder: (context, snap) {
+                                    return snap.hasData ? ListView.separated(
+                                        itemBuilder: (context, index) {
+                                            return Container(
+                                                color: snap.data[index].item2 ? Colors.lightGreen : Colors.red,
+                                                child: ListTile(
+                                                    title: CustomLabel(
+                                                        snap.data[index].item1,
+                                                        fontSize: Constant.mediumFont,
                                                     ),
-                                                );
-                                            },
-                                            separatorBuilder: (context, index) {
-                                                return Divider();
-                                            },
-                                            itemCount: snap.data.length,
-                                        ) : Container();
-                                    },
-                                ),
+                                                ),
+                                            );
+                                        },
+                                        separatorBuilder: (context, index) {
+                                            return Divider();
+                                        },
+                                        itemCount: snap.data.length,
+                                    ) : Container();
+                                },
                             ),
-                        ],
-                    ),
+                        ),
+                    ],
                 ),
             ),
         );

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:core';
 import 'dart:math';
 
 import 'package:arc_up/card_list.dart';
@@ -35,6 +36,11 @@ class _CardScreen extends State<CardScreen> {
     bool gDLock = false;
     Tween tween;
     int _i = 0;
+    bool _popped;
+    List<Color> gradient = [
+        HSVColor.fromAHSV(1, 313, 0.40, 0.91).toColor(),
+        HSVColor.fromAHSV(1, 313, 0.25, 0.96).toColor(),
+    ];
     
     List<String> list;
     final int type;
@@ -44,18 +50,23 @@ class _CardScreen extends State<CardScreen> {
     @override
     void initState() {
         super.initState();
+        _popped = false;
         list = CardList.list[type].toList();
         list.shuffle();
-        current = list[_i];
+        current = list[_i++];
         _sub.add(accelerometerEvents.listen((AccelerometerEvent event) {
             setState(() {
                 aDZ = event.z;
-                _switch();
+                //_switch();
             });
         }));
         stopwatch.start();
-        Timer(Duration(minutes: 1), ()  {
-            Navigator.pop(context, wordData);
+        Timer(Duration(minutes: 1), () {
+            if (!_popped) {
+                _dispose();
+                Navigator.pop(context, wordData);
+                _popped = true;
+            }
         });
     }
     
@@ -72,32 +83,46 @@ class _CardScreen extends State<CardScreen> {
     
     void _next() {
         //TODO: next
-        wordData.add(Tuple2(current, true));
-        if (_i >= 49) {
-            Navigator.pop(context, wordData);
+        if (_i < 50) {
+            wordData.add(Tuple2(current, true));
+            if (_i >= 49 && !_popped) {
+                _dispose();
+                Navigator.pop(context, wordData);
+                _popped = true;
+            }
+            else
+                setState(() {
+                    current = list[_i++];
+                    score++;
+                    gDLock = true;
+                });
         }
-        else setState(() {
-            current = list[++_i];
-            score++;
-            gDLock = true;
-        });
     }
     
     void _skip() {
         //TODO: skip
-        wordData.add(Tuple2(current, false));
-        if (_i >= 49) {
-            Navigator.pop(context, wordData);
+        if (_i < 50) {
+            wordData.add(Tuple2(current, false));
+            if (_i >= 49 && !_popped) {
+                _dispose();
+                Navigator.pop(context, wordData);
+                _popped = true;
+            }
+            else
+                setState(() {
+                    current = list[_i++];
+                    gDLock = true;
+                });
         }
-        else setState(() {
-            current = list[++_i];
-            gDLock = true;
-        });
     }
     
     @override
     void dispose() {
         super.dispose();
+        _dispose();
+    }
+    
+    void _dispose() {
         for (StreamSubscription<dynamic> subscription in _sub) {
             subscription.cancel();
         }
@@ -106,14 +131,6 @@ class _CardScreen extends State<CardScreen> {
     @override
     Widget build(BuildContext context) {
         return Scaffold(
-            appBar: GradientAppBar(
-                backgroundColorStart: HSVColor.fromAHSV(1, 313, 0.40, 0.10).toColor(),
-                backgroundColorEnd: HSVColor.fromAHSV(1, 313, 0.25, 0.20).toColor(),
-                title: CustomLabel(
-                    "placeholder",
-                    fontSize: Constant.titleFont,
-                ),
-            ),
             body: Container(
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -155,7 +172,7 @@ class _CardScreen extends State<CardScreen> {
                                 fontSize: Constant.cardFont,
                             ),
                             CustomLabel(
-                                score.toString(),
+                                aDZ.toString(),
                                 fontSize: Constant.largeFont,
                             ),
                         ],
