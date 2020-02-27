@@ -1,8 +1,8 @@
 # To do
 
-- [ ] Main screen
-- [ ] Card screen
+- [X] Main screen
+- [X] Card screen
 - [ ] Card animation
-- [ ] Word list
+- [X] Word list
 - [ ] Word explanation 
-- [ ] Card swipe
+- [X] Card swipe

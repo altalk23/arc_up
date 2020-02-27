@@ -26,17 +26,16 @@ class CardScreen extends StatefulWidget {
 
 class _CardScreen extends State<CardScreen> {
     Stopwatch stopwatch = Stopwatch();
-    double aDZ;
-    double lim = 8.5;
+    double lim = 9.5;
     List<StreamSubscription<dynamic>> _sub = <StreamSubscription<dynamic>>[];
     List<Tuple2<String, bool>> wordData = List<Tuple2<String, bool>>();
     Random random = new Random();
     String current;
     int score = 0;
-    bool gDLock = false;
-    Tween tween;
     int _i = 0;
-    bool _popped;
+    int _countdown = 60;
+    bool _tilted;
+    Timer _timer;
     List<Color> gradient = [
         HSVColor.fromAHSV(1, 313, 0.40, 0.91).toColor(),
         HSVColor.fromAHSV(1, 313, 0.25, 0.96).toColor(),
@@ -50,70 +49,69 @@ class _CardScreen extends State<CardScreen> {
     @override
     void initState() {
         super.initState();
-        _popped = false;
+        _tilted = false;
         list = CardList.list[type].toList();
         list.shuffle();
         current = list[_i++];
+        _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
+            setState(() {
+                _countdown--;
+                if (_countdown <= 0) {
+                    _dispose();
+                    Navigator.pop(context, wordData);
+                    timer.cancel();
+                }
+            });
+        });
         _sub.add(accelerometerEvents.listen((AccelerometerEvent event) {
             setState(() {
-                aDZ = event.z;
-                //_switch();
+                //print(event.toString());
+                if (!_tilted) {
+                    if (event.z > lim) {
+                        _tilted = true;
+                        wordData.add(Tuple2(current, true));
+                        setState(() {
+                            score++;
+                            current = "Correct!";
+                            gradient = [
+                                HSVColor.fromAHSV(1, 121, 0.60, 0.91).toColor(),
+                                HSVColor.fromAHSV(1, 121, 0.45, 0.96).toColor(),
+                            ];
+                        });
+                    }
+                    if (event.z < -lim) {
+                        _tilted = true;
+                        wordData.add(Tuple2(current, false));
+                        setState(() {
+                            current = "Pass!";
+                            gradient = [
+                                HSVColor.fromAHSV(1, 55, 0.60, 0.91).toColor(),
+                                HSVColor.fromAHSV(1, 55, 0.45, 0.96).toColor(),
+                            ];
+                        });
+                    }
+                }
+                else {
+                    if (event.x > lim && lim - 14 < event.z && event.z < 14 - lim) {
+                        _tilted = false;
+                        setState(() {
+                            current = list[_i++];
+                            gradient = [
+                                HSVColor.fromAHSV(1, 313, 0.40, 0.91).toColor(),
+                                HSVColor.fromAHSV(1, 313, 0.25, 0.96).toColor(),
+                            ];
+                        });
+                        
+                        if (_i >= 49) {
+                            _dispose();
+                            Navigator.pop(context, wordData);
+                            _timer.cancel();
+                        }
+                    }
+                }
             });
         }));
         stopwatch.start();
-        Timer(Duration(minutes: 1), () {
-            if (!_popped) {
-                _dispose();
-                Navigator.pop(context, wordData);
-                _popped = true;
-            }
-        });
-    }
-    
-    void _switch() {
-        if (aDZ > lim && !gDLock) {
-            _next();
-        }
-        else if (aDZ < -lim && !gDLock) {
-            _skip();
-        }
-        else if (aDZ <= lim && aDZ >= -lim) gDLock = false;
-        //TODO: nothing
-    }
-    
-    void _next() {
-        //TODO: next
-        if (_i < 50) {
-            wordData.add(Tuple2(current, true));
-            if (_i >= 49 && !_popped) {
-                _dispose();
-                Navigator.pop(context, wordData);
-                _popped = true;
-            }
-            else
-                setState(() {
-                    current = list[_i++];
-                    score++;
-                    gDLock = true;
-                });
-        }
-    }
-    
-    void _skip() {
-        //TODO: skip
-        if (_i < 50) {
-            wordData.add(Tuple2(current, false));
-            if (_i >= 49 && !_popped) {
-                _dispose();
-                Navigator.pop(context, wordData);
-                _popped = true;
-            }
-            else
-                setState(() {
-                    current = list[_i++];
-                    gDLock = true;
-                });
-        }
     }
     
     @override
@@ -130,52 +128,39 @@ class _CardScreen extends State<CardScreen> {
     
     @override
     Widget build(BuildContext context) {
-        return Scaffold(
-            body: Container(
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.topRight,
-                        colors: [
-                            HSVColor.fromAHSV(1, 313, 0.40, 0.91).toColor(),
-                            HSVColor.fromAHSV(1, 313, 0.25, 0.96).toColor(),
-                        ],
+        return WillPopScope(
+            onWillPop: () async => false,
+            child: Scaffold(
+                body: Container(
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.bottomLeft,
+                            end: Alignment.topRight,
+                            colors: gradient,
+                        ),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(75),
+                        ),
+                        border: Border.all(
+                            color: Colors.white,
+                            width: 20,
+                            style: BorderStyle.solid,
+                        ),
                     ),
-                    borderRadius: BorderRadius.all(
-                        Radius.circular(75),
-                    ),
-                    border: Border.all(
-                        color: Colors.white,
-                        width: 20,
-                        style: BorderStyle.solid,
-                    ),
-                ),
-                child: Center(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: <Widget>[
-                                    CustomButton(
-                                        child: CustomLabel("next"),
-                                        onPressed: _next,
-                                    ),
-                                    CustomButton(
-                                        child: CustomLabel("skip"),
-                                        onPressed: _skip,
-                                    ),
-                                ],
-                            ),
-                            CustomLabel(
-                                current,
-                                fontSize: Constant.cardFont,
-                            ),
-                            CustomLabel(
-                                aDZ.toString(),
-                                fontSize: Constant.largeFont,
-                            ),
-                        ],
+                    child: Center(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                                CustomLabel(
+                                    _countdown.toString(),
+                                    fontSize: Constant.largeFont,
+                                ),
+                                CustomLabel(
+                                    current,
+                                    fontSize: Constant.cardFont,
+                                ),
+                            ],
+                        ),
                     ),
                 ),
             ),

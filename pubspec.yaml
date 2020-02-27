@@ -28,12 +28,63 @@ dependencies:
 dev_dependencies:
     flutter_test:
         sdk: flutter
+    flutter_launcher_icons: "^0.7.3"
+
+flutter_icons:
+    image_path_android: "assets/logo/icon.png"
+    image_path_ios: "assets/logo/icon.png"
+    android: true # can specify file name here e.g. "ic_launcher"
+    ios: true # can specify file name here e.g. "My-Launcher-Icon"
 
 # The following section is specific to Flutter.
 flutter:
     fonts:
-        -   family: Nunito
+        -   family: Raleway
             fonts:
-                -   asset: lib/fonts/Nunito-Bold.ttf
+                -   asset: assets/fonts/Raleway-100.ttf
+                    weight: 100
+                -   asset: assets/fonts/Raleway-100i.ttf
+                    weight: 100
+                    style: italic
+                -   asset: assets/fonts/Raleway-200.ttf
+                    weight: 200
+                -   asset: assets/fonts/Raleway-200i.ttf
+                    weight: 200
+                    style: italic
+                -   asset: assets/fonts/Raleway-300.ttf
+                    weight: 300
+                -   asset: assets/fonts/Raleway-300i.ttf
+                    weight: 300
+                    style: italic
+                -   asset: assets/fonts/Raleway-400.ttf
+                    weight: 400
+                -   asset: assets/fonts/Raleway-400i.ttf
+                    weight: 400
+                    style: italic
+                -   asset: assets/fonts/Raleway-500.ttf
+                    weight: 500
+                -   asset: assets/fonts/Raleway-500i.ttf
+                    weight: 500
+                    style: italic
+                -   asset: assets/fonts/Raleway-600.ttf
+                    weight: 600
+                -   asset: assets/fonts/Raleway-600i.ttf
+                    weight: 600
+                    style: italic
+                -   asset: assets/fonts/Raleway-700.ttf
+                    weight: 700
+                -   asset: assets/fonts/Raleway-700i.ttf
+                    weight: 700
+                    style: italic
+                -   asset: assets/fonts/Raleway-800.ttf
+                    weight: 800
+                -   asset: assets/fonts/Raleway-800i.ttf
+                    weight: 800
+                    style: italic
+                -   asset: assets/fonts/Raleway-900.ttf
+                    weight: 900
+                -   asset: assets/fonts/Raleway-900i.ttf
+                    weight: 900
+                    style: italic
     uses-material-design: true
 
